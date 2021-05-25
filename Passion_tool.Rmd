@@ -1,0 +1,242 @@
+---
+title: "PASSION planning and dimensioning tool"
+author: "PASSION WP6 Research Team"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, include = FALSE, echo=F, results='hide', warning=FALSE, cache=FALSE, message=FALSE}
+
+#{r, eval=T, echo=F, results='hide'}
+
+source("R_passion_tool2.R", local = knitr::knit_global())
+# or sys.source("your-script.R", envir = knitr::knit_global())
+```
+
+# Summary report {-}
+
+This Rmd file is a tool for planing MAN networks using PASSION technology. This tool receives a hierarchical network topology  (with HL1/2 - HL3 - HL4 nodes), traffic demands from all HL4 nodes toward the closest HL1/2 and Passion's OSNR speficiations for traversing the nodes, all in CSV format. The output comprises the optical lightpaths (both primary and backup) from every HL4 node to the closest HL1/2 nodes, including the WDM physical attributes of the lightpath (i.e. end-to-end OSNR and bitrate supported 25/40/50 Gb/s), wavelenght allocation (First-Fit heuristics), hardware node configuration and techno-economics of the solution.
+
+In a nutshell, the planning tool receives as inputs:
+
+- Network topology characterised as files: nodesLabeling.csv and crossMatrix.csv. The first file shows the main features of each node. The second is a matrix that provides connectivity between the nodes (0 if not connected or a number of km if connected).
+
+- Traffic matrix: this is included in nodesLabeling.csv as the amount of traffic injected (in Gb/s) to the MAN per HL4, HL3 and HL12 nodes.
+
+- OSNR requirements for the support of 25, 40 and 50 Gb/s per wavelength, as files osnr_25_oh_fec.csv, osnr_40_oh_fec.csv and osnr_50_oh_fec.csv.
+
+- Normalised equipment cost (in Cost Units), provided in file Passion_cost_components.csv.
+
+Output: 
+
+- lightpaths.csv includes the primary and backup paths from each HL4 towards the closest HL1/2. The backup path is both link and node disjoint if possible; if the topology connectivity does not allow it, the backup path shares the minumum number of links and nodes with the primary path. This file also includes details regarding the end-to-end OSNR, bitrate and route.
+
+- FFlightpaths.csv provides a description of the wavelength allocation per lightpath
+
+- NodeDesign.csv
+
+It is worth remarking that this is an R Markdown document, a simple formatting syntax for authoring and dynamically generate PDF documents using R code. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+
+# Network topology description
+
+The following figures show the network topology used in this study.
+
+- `r N_HL12s`  HL1/2 nodes shown in RED
+- `r N_HL3s` HL3 nodes shown in GREEN
+- `r N_HL4s` HL4 nodes shown in YELLOW
+
+```{r, echo = FALSE, fig.align='center'}
+
+colrs <- c("dark red","slategrey", "green", "yellow")
+V(gPass)$color = colrs[as.numeric(substring(V(gPass)$type,3,3))] 
+V(gPass)$size <- 4
+plot(gPass, vertex.label = NA, simplify=TRUE, main = "Simplified view")
+```
+
+```{r, echo=FALSE, fig.align='center'}
+par(mfrow=c(1,2))
+V(gPass)$size <- 3*(5-as.numeric(substring(V(gPass)$type,3,3)))
+plot(gPass, vertex.label = NA, simplify=TRUE, layout = layout_as_tree, main = "Hierarchical view")
+plot(gPass, vertex.label = NA, simplify=TRUE, layout = layout.circle, main = "Circle view")
+
+```
+
+The next figures show a summary of the link lengths and degree per node:
+
+```{r, echo = FALSE}
+par(mfrow=c(1,2))
+hist(degree(gPass,mode="all"), breaks=(c(0:10)+0.5), xlab = "Node degree", main ="")
+hist(E(gPass)$weight, breaks = (10*c(0:11)), xlab="Link distance (KM)",main="")
+
+```
+
+Other properties of the topology are:
+
+- The edge density is `r (edge_density(gPass, loops=F))`
+
+- Average distance is `r (mean_distance(gPass, directed = TRUE, unconnected = TRUE))`
+
+The following table provides a short summary of the first 10 nodes in the topology:
+
+```{r cols.print=3, rows.print=3, echo = FALSE} 
+library(knitr)
+kable(nodes.df[1:10,], caption = "Some Nodes (name, type and offered traffic)")
+```
+ 
+
+# Optical lightpaths
+
+## Demand matrix
+
+The traffic matrix for the experiment is summarised in the following histogram:
+
+```{r, echo = FALSE, fig.align='center', fig.width=5, warning = FALSE}
+hist(nodes.df$Traffic, mode="all", xlab = "Traffic (Gb/s)", main ="Traffic demands")
+```
+with a mean of `r mean(nodes.df$Traffic)` Gb/s.
+
+
+## Lightpath characterisation
+
+The output file named lightpaths.csv provides the final description of every HL4-HL1/2 lightpath in the network topology. This includes both the route (sequence of links and nodes traversed) for both primary and secondary path, along with other characteristics, like the distance in hops and KM, end-to-end OSNR and whether or not the OSNR is good enough to support the transmission at 25, 40 and 50 Gb/s. The following boxplots provide a summary of the main distance metrics (hops and KM) of all lightpaths (primary in green, secondary in red), as well as the final end-to-end OSNR per lightpath:
+
+
+```{r, echo =FALSE}
+
+par(mfrow =c(1,3))
+
+boxplot(Ppaths.df[,"distance_KM"], SecPaths.df[,"distance_KM"], 
+        main = "Distance (KM)",
+        at = c(1,2),
+        names = c("primary","secondary"),
+        las = 2,
+        col = c("green","red"),
+        border = "brown",
+        horizontal = FALSE,
+        notch = TRUE
+)
+
+boxplot(Ppaths.df[,"distance_hops"], SecPaths.df[,"distance_hops"], 
+        main = "# Hops",
+        at = c(1,2),
+        names = c("primary","secondary"),
+        las = 2,
+        col = c("green","red"),
+        border = "brown",
+        horizontal = FALSE,
+        notch = TRUE
+)
+
+boxplot(Ppaths.df[,"OSNR_e2e"], SecPaths.df[,"OSNR_e2e"], 
+        main = "# End-to-End OSNR (dB)",
+        at = c(1,2),
+        names = c("primary","secondary"),
+        las = 2,
+        col = c("green","red"),
+        border = "brown",
+        horizontal = FALSE,
+        notch = TRUE
+)
+
+```
+
+## Primary paths
+
+Concerning primary paths, the average distance is `r mean(Ppaths.df$distance_KM)` km and `r mean(Ppaths.df$distance_hops)` hops. The selected distination HL1/2 are:
+
+```{r cols.print=3, rows.print=3, echo = FALSE} 
+library(knitr)
+kable(data.frame(Destination = summary(Ppaths.df$Destination)), caption = "Destination HL1/2 node")
+```
+and the percentage of lightpaths supporting each Bitrate is:
+```{r cols.print=3, rows.print=3, echo = FALSE} 
+library(knitr)
+kable(data.frame(Percentage = colSums(Ppaths.df[,c("Can_25G","Can_40G","Can_50G")])/dim(Ppaths.df)[1]*100), caption = "Bitrates supported (primary lightpath)")
+```
+
+## Backup paths
+
+Concerning backup paths, the average distance is `r mean(SecPaths.df$distance_KM)` km and `r mean(SecPaths.df$distance_hops)` hops. Their characterisation is
+```{r cols.print=3, rows.print=3, echo = FALSE} 
+library(knitr)
+kable(data.frame(Backup_type = summary(SecPaths.df$prim_sec)[2:length(levels(SecPaths.df$prim_sec))]), caption = "Backup path type")
+```
+
+The selected distination HL1/2 are:
+
+```{r cols.print=3, rows.print=3, echo = FALSE} 
+library(knitr)
+kable(data.frame(Destination = summary(SecPaths.df$Destination)), caption = "Destination HL1/2 node")
+```
+and the percentage of lightpaths supporting each Bitrate is:
+```{r cols.print=3, rows.print=3, echo = FALSE} 
+library(knitr)
+kable(data.frame(Percentage = colSums(SecPaths.df[,c("Can_25G","Can_40G","Can_50G")])/dim(SecPaths.df)[1]*100), caption = "Bitrates supported (sec lightpath)")
+```
+
+
+## First-Fit wavelength allocation
+
+Finally, First-Fit wavelength allocation of traffic demands heatmap, where occupied wavelengths are displayed in yellow, and empty ones are in red:
+
+```{r, echo = FALSE,fig.align='center'}
+heatmap(heat_table2, Colv = NA, Rowv = NA, scale="none", 
+        xlab="Wavelengths", ylab="Links", main="First-Fit allocation")
+```
+
+A CSV output file names FFlightpaths.csv is created with the wavelength allocation per lightpath.
+
+
+# Node Configuration and Cost
+
+The following tables show the final configuration of each HL4 and HL1/2 node, including ROADMs, and Passion S-BVTs:
+
+
+```{r, echo=FALSE}
+kable(HL4conf.df[,c("nlambdas","speed","degRoadm","cost")], caption = "HL4 HW configuration and cost (in CU)")
+```
+
+```{r, echo=FALSE}
+kable(HL3conf.df[,c("nlambdas","speed","degRoadm","cost")], caption = "HL3 HW configuration and cost (in CU)")
+```
+
+
+```{r, echo = FALSE}
+kable(HL12conf.df[,c("nlambdas","degRoadm","cost")], caption = "HL1/2 HW configuration and cost (in CU)")
+
+```
+
+
+Finally, the total cost of ownership of the Passion solution applied to this topology is:
+
+```{r, echo = FALSE}
+kable(data.frame(TCO = TCO), caption = "Total Cost (in CU)")
+```
+
+<!-- # Techno-economics -->
+
+
+
+# Appendix {-}
+
+Software code developed with R Studio v. 1.4.1103.
+
+- Open-source software: `r R.version$version.string` and igraph library
+
+
+<!-- Appendix with the routes, and everything -->
+
+
+
+
