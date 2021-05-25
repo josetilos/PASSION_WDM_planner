@@ -1,6 +1,8 @@
-The Passion’s network planning tool is based on the R programming language for obtaining the network configuration, in particular, the igraph library, version 0.9.3. Following the URL description, “igraph, the network analysis package, is a collection of network analysis tools with the emphasis on efficiency, portability and ease of use; igraph is open-source and free, and can be programmed in R, Python, Mathematica and C/C++”. 
+This software tool aims at designing and planning optical WDM networks employing low-cost VCSEL-based S-BVTs for multi-Tb/s transmission in next-generation Metro networks. Further details on the PASSION technology can be found in the EU project's website: https://www.passion-project.eu/ 
 
-In this sense, the easiest way to use the tool is by installing R (v 3.0.1+) and Rstudio IDE (v 1.4+), available for MAC OS, Linux and Windows systems. The easiest way to install them is by following the instructions in https://www.rstudio.com/products/rstudio/download/
+The tool is fed with the optical characterization of PASSION hardware (for OSNR calculations), hierarchical network topology and traffic demands, and delivers as outputs, the primary and backup optical lightpaths, wavelength assignment per fiber link, and techno-economic metrics of the designed network, including per-node design and network cost.
+
+The Passion’s network planning tool is based on the R programming language for obtaining the network configuration, in particular, the igraph library, version 0.9.3. In this sense, the easiest way to use the tool is by installing R (v 3.0.1+) and Rstudio IDE (v 1.4+), available for MAC OS, Linux and Windows systems. The easiest way to install them is by following the instructions in https://www.rstudio.com/products/rstudio/download/
 
 Once these are installed and configured, the latest version available of the igraph package is needed to be installed, using install.packages(“igraph”,dependences=TRUE) 
 
