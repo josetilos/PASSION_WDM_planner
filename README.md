@@ -17,12 +17,9 @@ To execute the main R code, only a click to Source button in Rstudio is needed
 In a nutshell, the planning tool receives as inputs: 
 
 - Network topology characterised as files: nodesLabeling.csv and crossMatrix.csv. The first file shows the main features of each node. The second is a matrix that provides connectivity between the nodes (0 if not connected or a number of km if connected). 
-
 - Traffic matrix: this is included in nodesLabeling.csv as the amount of traffic injected (in Gb/s) to the MAN per HL4, HL3 and HL12 nodes. 
-
 - OSNR requirements for the support of 25, 40 and 50 Gb/s per wavelength, as files osnr_25_oh_fec.csv, osnr_40_oh_fec.csv and osnr_50_oh_fec.csv. 
-
-- Normalised equipment cost (in Cost Units), provided in file Passion_cost_components.csv. 
+- Normalised equipment cost (in Cost Units), provided in file Passion_cost_components.csv. 
 
 Output:  
 
