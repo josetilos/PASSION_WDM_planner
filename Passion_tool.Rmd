@@ -56,12 +56,70 @@ The following figures show the network topology used in this study.
 - `r N_HL3s` HL3 nodes shown in GREEN
 - `r N_HL4s` HL4 nodes shown in YELLOW
 
+- Primary path of the first demand shown in RED
+- Secondary path of the first demand shown in GREEN
+
 ```{r, echo = FALSE, fig.align='center'}
+
+## Edges of the topology stored in linknames
+linknames = as_ids(E(gPass));
+
+## Set the workspace folder
+setwd("D:/github_projects/PASSION_jose")
+
+## Read primary path of the first demand:
+primary_paths = read.csv("./primary_path.csv", header = F, sep = ";")
+primary_path_string = primary_paths[1,]
+
+## Identify which edges of the topology must be highlighted:
+
+## Find the position of the edges of primary path in edges of the topology
+char_i_string = character(0);
+char_j_string = character(0);
+colors_paths = rep(0,length(linknames)) ## Values 0 are edges not traversed, values 1 are edges traversed by primary path
+for (ipath in seq_along(primary_path_string)){
+  if (ipath > 1){
+    if (primary_path_string[ipath] != ""){
+      char_i_string[ipath-1] = paste0(primary_path_string[ipath],"|",primary_path_string[ipath-1]);
+      char_j_string[ipath-1] = paste0(primary_path_string[ipath-1],"|",primary_path_string[ipath]);
+      colors_paths = colors_paths + as.integer(linknames == char_i_string[ipath-1]) + as.integer(linknames == char_j_string[ipath-1]);
+    }
+  }
+}
+
+## Read secondary path of the first demand:
+secondary_paths = read.csv("./secondary_path.csv", header = F, sep = ";")
+secondary_path_string = secondary_paths[1,]
+
+## Find the position of the edges of secondary path in edges of the topology
+char_i_string = character(0);
+char_j_string = character(0);
+for (jpath in seq_along(secondary_path_string)){
+  if (jpath > 1){
+    if (secondary_path_string[jpath] != ""){
+      char_i_string[jpath-1] = paste0(secondary_path_string[jpath],"|",secondary_path_string[jpath-1]);
+      char_j_string[jpath-1] = paste0(secondary_path_string[jpath-1],"|",secondary_path_string[jpath]);
+      ## Values 0 are edges not traversed, values 2 are edges traversed by secondary path
+      colors_paths = colors_paths + 2*as.integer(linknames == char_i_string[jpath-1]) + 2*as.integer(linknames == char_j_string[jpath-1]);
+    }
+  }
+}
+
+##Translation
+colors_paths[colors_paths == 0] = "gray"; ##Not occupied links
+colors_paths[colors_paths == 1] = "red";  ##Links occupied by primary path
+colors_paths[colors_paths == 2] = "green";##Links occupied by secondary path
 
 colrs <- c("dark red","slategrey", "green", "yellow")
 V(gPass)$color = colrs[as.numeric(substring(V(gPass)$type,3,3))] 
 V(gPass)$size <- 4
-plot(gPass, vertex.label = NA, simplify=TRUE, main = "Simplified view")
+
+## Plot the figure with primary and secondary paths shown in colors
+plot(gPass,vertex.label = NA, simplify = TRUE,
+    edge.color=colors_paths,           # Edge color
+    )
+
+
 ```
 
 ```{r, echo=FALSE, fig.align='center'}
