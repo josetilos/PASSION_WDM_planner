@@ -21,7 +21,9 @@
 
 library(igraph)
 
-setwd("~/Google Drive/Research/Proyectos/PASSION_jose")
+setwd("D:/github_projects/PASSION_jose")
+#setwd("~/Google Drive/Research/Proyectos/PASSION_jose")
+#setwd("~/github_projects")
 
 rm(list=ls())
 
@@ -130,9 +132,9 @@ ll_links = E(gPass)$name
 
 
 print("Finding lightpaths for HL4 nodes")
-
+n_exec = 0;
 for (HL4index in (1:N_HL4s)) { #N_HL4s)) {
-  
+  n_exec = n_exec + 1;
   
   gPass = get_gPass(nodes.df,connectivity.mat)
   HL12s = V(gPass)[which(V(gPass)$type=="HL12")]
@@ -187,8 +189,19 @@ for (HL4index in (1:N_HL4s)) { #N_HL4s)) {
   E(gPass)$traff = ll_traff
   E(gPass)[which(E(gPass) %in% aa_primary_e$epath[[1]])]$traff = E(gPass)[which(E(gPass) %in% aa_primary_e$epath[[1]])]$traff +1
   ll_traff = E(gPass)$traff
+  if (n_exec == 1) {
+    append_var = F;
+  }else{
+    append_var = T;
+  }
+  write.table( t(aa_primary_v$vpath[[1]]$name),  
+               file="primary_path.csv", 
+               append = append_var, 
+               sep=';', 
+               row.names=F, 
+               col.names=F )
   
-  
+  #write.csv(aa_primary_v$vpath[[1]]$name, file = "primary_path.csv", row.names = FALSE) # guarda un archivo csv
   PrimaryPath = paste0(aa_primary_v$vpath[[1]]$name,collapse="++++")
   Node_sequence = PrimaryPath
   
@@ -304,6 +317,13 @@ for (HL4index in (1:N_HL4s)) { #N_HL4s)) {
                                             from = Source_node, 
                                             to = Destination_node, 
                                             output = 'vpath')
+  
+  write.table( t(aa_secondary_v_planb$vpath[[1]]$name),  
+               file="secondary_path.csv", 
+               append = append_var, 
+               sep=';', 
+               row.names=F, 
+               col.names=F )
   
   SecondaryPath_PlanB = paste0(aa_secondary_v_planb$vpath[[1]]$name,collapse="++++")
   
