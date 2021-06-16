@@ -56,8 +56,8 @@ The following figures show the network topology used in this study.
 - `r N_HL3s` HL3 nodes shown in GREEN
 - `r N_HL4s` HL4 nodes shown in YELLOW
 
-- Primary path of the first demand shown in RED
-- Secondary path of the first demand shown in GREEN
+- Primary path of the first demand shown in GREEN
+- Secondary path of the first demand shown in RED
 
 ```{r, echo = FALSE, fig.align='center'}
 
@@ -107,17 +107,15 @@ for (jpath in seq_along(secondary_path_string)){
 
 ##Translation
 colors_paths[colors_paths == 0] = "gray"; ##Not occupied links
-colors_paths[colors_paths == 1] = "red";  ##Links occupied by primary path
-colors_paths[colors_paths == 2] = "green";##Links occupied by secondary path
+colors_paths[colors_paths == 1] = "green";  ##Links occupied by primary path
+colors_paths[colors_paths == 2] = "red";##Links occupied by secondary path
 
 colrs <- c("dark red","slategrey", "green", "yellow")
 V(gPass)$color = colrs[as.numeric(substring(V(gPass)$type,3,3))] 
 V(gPass)$size <- 4
 
 ## Plot the figure with primary and secondary paths shown in colors
-plot(gPass,vertex.label = NA, simplify = TRUE,
-    edge.color=colors_paths,           # Edge color
-    )
+plot(gPass,vertex.label = NA, simplify = TRUE, edge.color=colors_paths, main = "Simplified view")
 
 
 ```
