@@ -198,6 +198,85 @@ heatmap(heat_table2, Colv = NA, Rowv = NA, scale="none",
 A CSV output file names FFlightpaths.csv is created with the wavelength allocation per lightpath.
 
 
+## Lightpath examples
+
+The following figure presents one lightpath as an example, its primary route (green) and secondary one (red):
+
+```{r, echo = FALSE, fig.align='center'}
+
+gPass = get_gPass(nodes.df,connectivity.mat)
+
+example_prim = Results.df[1,]
+example_second = Results.df[2,]
+
+
+ll_primary = str_split(example_prim$FullPath,pattern = '\\+\\+\\+\\+',simplify=T)
+
+for (ii in c(1:(length(ll_primary)-1))) {
+
+  ll_aux = get.shortest.paths(gPass, ll_primary[ii],ll_primary[ii+1],weights=NA,output="epath")
+  
+  E(gPass)[which(E(gPass) %in% ll_aux$epath[[1]])]$width = 5
+  E(gPass)[which(E(gPass) %in% ll_aux$epath[[1]])]$color = "green"
+    
+}
+
+ll_second = str_split(example_second$FullPath,pattern = '\\+\\+\\+\\+',simplify=T)
+
+for (ii in c(1:(length(ll_second)-1))) {
+
+  ll_aux = get.shortest.paths(gPass, ll_second[ii],ll_second[ii+1],weights=NA,output="epath")
+  
+  E(gPass)[which(E(gPass) %in% ll_aux$epath[[1]])]$width = 5
+  E(gPass)[which(E(gPass) %in% ll_aux$epath[[1]])]$color = "red"
+    
+}
+
+
+colrs <- c("dark red","slategrey", "green", "yellow")
+V(gPass)$color = colrs[as.numeric(substring(V(gPass)$type,3,3))] 
+V(gPass)$size <- 4
+plot(gPass, vertex.label = NA, simplify=TRUE, main = "Simplified view")
+```
+
+The wavelengths and links used for the primary lightpath are shown next.
+
+```{r, echo = FALSE,fig.align='center'}
+
+FFallocation_example = as.data.frame(matrix(NA,
+                                    nrow=dim(FFallocation_final)[1],
+                                    ncol=dim(FFallocation_final)[2]))
+
+aa = which(FFallocation_final == paste("lightpath",example_prim$Source,example_prim$Destination, sep = "++"))
+
+nlinks = aa[aa<length(E(gPass))]
+mm_aux = matrix(aa %% length(E(gPass)), nrow=length(nlinks))[,1]
+nwave = dim(matrix(aa %% length(E(gPass)), nrow=length(nlinks)))[2]
+
+wini = floor(aa[1]/length(E(gPass)))+1
+
+FFallocation_example[mm_aux,(wini:(wini+nwave-1))] = 1
+
+heat_table_example = apply(FFallocation_example,2,is.na)
+heat_table_example2 = matrix(as.numeric(heat_table_example), nrow=dim(heat_table_example)[1],
+                             ncol=dim(heat_table_example)[2], byrow=F)
+
+heatmap(heat_table_example2, Colv = NA, Rowv = NA, scale="none", 
+        xlab="Freq. Slots", ylab="links", main="First-Fit: lightpath example")
+
+```
+
+
+Finally, other features of this lightpath are:
+
+```{r cols.print=3, rows.print=3, echo = FALSE} 
+library(knitr)
+aa = t(example_prim)
+colnames(aa) = c("Ligthpath properties")
+kable(aa)
+
+```
+
 # Node Configuration and Cost
 
 The following tables show the final configuration of each HL4 and HL1/2 node, including ROADMs, and Passion S-BVTs:

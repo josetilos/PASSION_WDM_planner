@@ -19,6 +19,7 @@
 
 # Required libraries
 
+library(stringr)
 library(igraph)
 
 setwd("~/Google Drive/Research/Proyectos/PASSION_jose")
@@ -58,12 +59,12 @@ alpha = 1
 print("Loading Topology and OSNR configuration")
 
 # Choose nodesLabeling_Germany.csv, nodesLabeling_Tokyo.csv, nodesLabeling_Milano.csv, nodesLabeling_Mexico_short.csv, 
-nodes.df = read.csv(file="nodesLabeling_Tokyo.csv", sep=";", header=F); 
+nodes.df = read.csv(file="nodesLabeling_Germany.csv", sep=";", header=F); 
 colnames(nodes.df) = c("Nodes","Types","Traffic")
 nodes.df$Types = as.character(nodes.df$Types)
 
 # Choose crossMatrix_Germany.csv, crossMatrix_Tokyo.csv, crossMatrix_Milano.csv, crossMatrix_Mexico_short.csv
-connectivity.mat = alpha*as.matrix(read.csv(file="crossMatrix_Tokyo.csv", sep = ";",header=F))
+connectivity.mat = alpha*as.matrix(read.csv(file="crossMatrix_Germany.csv", sep = ";",header=F))
 
 
 nodes.df[which(nodes.df$Types=="HL5"),"Types"] = "HL5"
