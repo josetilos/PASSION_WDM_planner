@@ -6,7 +6,7 @@ Title: All-optical aggregation and distribution of traffic in large metropolitan
 
 Reference: J. Opt. Commun. Netw. 14(5), 316-326 (2022)
 
-DOI https://opg.optica.org/jocn/abstract.cfm?URI=jocn-14-5-316
+URL: https://opg.optica.org/jocn/abstract.cfm?URI=jocn-14-5-316
 
 This software tool aims at designing and planning optical WDM networks employing low-cost VCSEL-based S-BVTs for multi-Tb/s transmission in next-generation Metro networks. Further details on the PASSION technology can be found in the EU project's website: https://www.passion-project.eu/ 
 
