@@ -1,3 +1,10 @@
+WORK PUBLISHED IN (Please Cite): 
+Authors: Mariangela Rapisarda, José Alberto Hernández, Alberto Gatto, Paola Parolari, Pierpaolo Boffi, Michela Svaluto Moreolo, Josep Maria Fábrega, Laia Nadal, Ricardo Martínez, Víctor López, Juan-Pedro Fernández-Palacios, Gabriel Otero, and David Larrabeiti
+Title: All-optical aggregation and distribution of traffic in large metropolitan area networks using multi-Tb/s S-BVTs
+Reference: J. Opt. Commun. Netw. 14(5), 316-326 (2022)
+DOI https://opg.optica.org/jocn/abstract.cfm?URI=jocn-14-5-316
+
+
 This software tool aims at designing and planning optical WDM networks employing low-cost VCSEL-based S-BVTs for multi-Tb/s transmission in next-generation Metro networks. Further details on the PASSION technology can be found in the EU project's website: https://www.passion-project.eu/ 
 
 The tool is fed with the optical characterization of PASSION hardware (for OSNR calculations), hierarchical network topology and traffic demands, and delivers as outputs, the primary and backup optical lightpaths, wavelength assignment per fiber link, and techno-economic metrics of the designed network, including per-node design and network cost.
