@@ -1,9 +1,12 @@
 WORK PUBLISHED IN (Please Cite): 
-Authors: Mariangela Rapisarda, José Alberto Hernández, Alberto Gatto, Paola Parolari, Pierpaolo Boffi, Michela Svaluto Moreolo, Josep Maria Fábrega, Laia Nadal, Ricardo Martínez, Víctor López, Juan-Pedro Fernández-Palacios, Gabriel Otero, and David Larrabeiti
-Title: All-optical aggregation and distribution of traffic in large metropolitan area networks using multi-Tb/s S-BVTs
-Reference: J. Opt. Commun. Netw. 14(5), 316-326 (2022)
-DOI https://opg.optica.org/jocn/abstract.cfm?URI=jocn-14-5-316
 
+Authors: Mariangela Rapisarda, José Alberto Hernández, Alberto Gatto, Paola Parolari, Pierpaolo Boffi, Michela Svaluto Moreolo, Josep Maria Fábrega, Laia Nadal, Ricardo Martínez, Víctor López, Juan-Pedro Fernández-Palacios, Gabriel Otero, and David Larrabeiti
+
+Title: All-optical aggregation and distribution of traffic in large metropolitan area networks using multi-Tb/s S-BVTs
+
+Reference: J. Opt. Commun. Netw. 14(5), 316-326 (2022)
+
+DOI https://opg.optica.org/jocn/abstract.cfm?URI=jocn-14-5-316
 
 This software tool aims at designing and planning optical WDM networks employing low-cost VCSEL-based S-BVTs for multi-Tb/s transmission in next-generation Metro networks. Further details on the PASSION technology can be found in the EU project's website: https://www.passion-project.eu/ 
 
